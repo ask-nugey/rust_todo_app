@@ -1,14 +1,18 @@
-use axum::{response::Html, routing::get, Router};
+use axum::Router;
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().route("/", get(handler));
+    // アプリケーションハンドラーの作成
+    let app = Router::new();
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    // 127.0.0.1:3000でTCPリスナー（ソケット）をバインド（＝接続の受け取り先を設定）
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+        .await
+        .unwrap();
+    let addr = listener.local_addr().unwrap();
 
+    println!("🤙 listening on {}", addr);
+
+    // axumサーバーを起動
     axum::serve(listener, app).await.unwrap();
-}
-
-async fn handler() -> Html<&'static str> {
-    Html("<h1>Hello world!</h1>")
 }
